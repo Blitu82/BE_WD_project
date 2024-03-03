@@ -15,14 +15,13 @@ const storage = new CloudinaryStorage({
     folder: 'bathy',
     use_filename: true,
     unique_filename: false,
-    overwrite: true,
     public_id: (req, file) => {
       // Extracting original filename without extension
       const filenameWithoutExtension = file.originalname
         .split('.')
         .slice(0, -1)
         .join('.');
-      return filenameWithoutExtension; // Use the original filename as public_id
+      return filenameWithoutExtension;
     },
   },
 });
