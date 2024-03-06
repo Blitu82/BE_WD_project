@@ -11,9 +11,14 @@ const app = express();
 // ℹ️ This function is getting exported from the config folder and runs most pieces of middleware
 require('./config')(app);
 
-// Routes - TO BE CREATED
+const { isAuthenticated } = require('./middleware/jwt.middleware');
+
+// Routes
 const gridRoutes = require('./routes/grid.routes');
+// app.use('/api', isAuthenticated, gridRoutes);
 app.use('/api', gridRoutes);
+const authRoutes = require('./routes/auth.routes');
+app.use('/auth', authRoutes);
 
 // Handle Errors - TO BE CREATED
 
