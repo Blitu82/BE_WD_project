@@ -20,15 +20,16 @@ const { parseString } = require('xml2js');
 // }
 
 router.get('/download', async (req, res) => {
+  const { minLat, minLng, maxLat, maxLng } = req.query;
   try {
-    // Example GetCoverage request in XML format
+    // GeoServer GetCoverage request in XML format
     const getCoverageXML = `<?xml version="1.0" encoding="UTF-8"?>
     <GetCoverage version="1.1.1" service="WCS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.opengis.net/wcs/1.1.1" xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:gml="http://www.opengis.net/gml" xmlns:ogc="http://www.opengis.net/ogc" xsi:schemaLocation="http://www.opengis.net/wcs/1.1.1 http://schemas.opengis.net/wcs/1.1.1/wcsAll.xsd">
       <ows:Identifier>ironhack:geotiffs</ows:Identifier>
       <DomainSubset>
         <ows:BoundingBox crs="urn:ogc:def:crs:EPSG::4326">
-          <ows:LowerCorner>29.241666666666656 -29.362500000000015</ows:LowerCorner>
-          <ows:UpperCorner>42.791666666666664 -7.358333333333343</ows:UpperCorner>
+          <ows:LowerCorner>${minLat} ${minLng}</ows:LowerCorner>
+          <ows:UpperCorner>${maxLat}  ${maxLng}</ows:UpperCorner>
         </ows:BoundingBox>
       </DomainSubset>
       <Output store="true" format="image/tiff">
@@ -52,13 +53,11 @@ router.get('/download', async (req, res) => {
         responseType: 'text', // Change responseType to text
       }
     );
-
     // Parse the XML response to extract the download link
     parseString(response.data, { explicitArray: false }, (err, result) => {
       if (err) {
         throw new Error('Error parsing XML response');
       }
-
       // Accessing the download link
       const downloadLink =
         result['wcs:Coverages']['wcs:Coverage']['ows:Reference']['$'][
@@ -67,7 +66,6 @@ router.get('/download', async (req, res) => {
 
       // Send the download link to the frontend
       res.json({ downloadLink });
-      console.log(downloadLink);
     });
   } catch (error) {
     console.log('An error occurred while getting the coverage:', error);

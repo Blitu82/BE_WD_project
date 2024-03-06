@@ -4,15 +4,15 @@
 
 ### Bathy Routes
 
-| Method | Route             | Description                         |
-| ------ | ----------------- | ----------------------------------- |
-| GET    | /api/grid         | Returns all maps DONE               |
-| GET    | /api/grid/:id     | Returns the specified grid          |
-| POST   | /api/grid         | Creates a new grid DONE             |
-| PUT    | /api/grid/:id     | Edits the specified grid            |
-| DELETE | /api/grid/:id     | Deletes the specified grid          |
-| POST   | /api/upload       | Uploads an image to Cloudinary DONE |
-| GET    | /api/download/:id | Downloads an image from Cloudinary  |
+| Method | Route         | Description                             |
+| ------ | ------------- | --------------------------------------- |
+| GET    | /api/grid     | Returns all tiles                       |
+| GET    | /api/grid/:id | Returns the specified tile              |
+| POST   | /api/grid     | Creates a new tile                      |
+| PUT    | /api/grid/:id | Edits the specified tile                |
+| DELETE | /api/grid/:id | Deletes the specified tile              |
+| POST   | /api/upload   | Uploads an image to Cloudinary NOT USED |
+| GET    | /api/download | Downloads a coverage from GeoServer     |
 
 ### Authentication Routes
 
