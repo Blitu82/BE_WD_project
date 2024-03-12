@@ -34,7 +34,7 @@ router.post('/signup', async (req, res, next) => {
     //***********************
 
     // Check if a user with the same email already exists.
-    const userExists = await User.findOneAndDelete({ email });
+    const userExists = await User.findOne({ email });
 
     // If a user with the same email already exists, send an error response
     if (userExists) {
@@ -60,7 +60,7 @@ router.post('/signup', async (req, res, next) => {
   }
 });
 
-// POST /auth/login - Verifies email and password and returns a JWT
+// POST /auth/login - Verifies email and password and returns a JWT.
 router.post('/login', async (req, res, next) => {
   const { email, password } = req.body;
   // Check if email or password are provided as empty string
@@ -77,16 +77,23 @@ router.post('/login', async (req, res, next) => {
       return res.status(401).json({ message: 'User not found.' });
     }
 
+    // Commpare the provided password with the one saved in the database
     const isPasswordCorrect = bcrypt.compareSync(password, user.password);
+
     // If password is correct, create a new JWT with the user data as the
     // payload. Do not send the hashed password in the token.
     if (isPasswordCorrect) {
+      // Deconstruct the user object to omit the password
+      // Create an object that will be set as the token payload.
       const payload = { _id: user._id, email: user.email };
+
+      // Create and sign the token
       const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
         algorithm: 'HS256', // algorithm to encrypt the token with
         expiresIn: '6h', // time to live of the JWT
       });
 
+      // Send the token as the response.
       res.status(200).json({ authToken });
     } else {
       return res.status(401).json({ message: 'Unable to authenticate user' });
@@ -97,13 +104,12 @@ router.post('/login', async (req, res, next) => {
   }
 });
 
-// This route receives a request that must have the JWT in the
-// headers. Upon
+// GET /auth/verify - Used to verify JWT stored on the client
 router.get('/verify', isAuthenticated, (req, res, next) => {
-  //if the jwt is valid, the payload gets decoded by the middleware
-  // and is made available in req.payload
+  //If the JWT token is valid, the payload gets decoded by the isAuthenticated middleware
+  // and is made available on 'req.payload'.
   // The route will send the user data stored in the payload of the JWT
-  res.json(req.payload);
+  res.status(200).json(req.payload);
 });
 
 module.exports = router;

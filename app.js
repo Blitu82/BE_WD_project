@@ -17,6 +17,7 @@ const { isAuthenticated } = require('./middleware/jwt.middleware');
 const gridRoutes = require('./routes/grid.routes');
 // app.use('/api', isAuthenticated, gridRoutes);
 app.use('/api', gridRoutes);
+
 const authRoutes = require('./routes/auth.routes');
 app.use('/auth', authRoutes);
 
