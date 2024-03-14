@@ -21,6 +21,9 @@ app.use('/api', gridRoutes);
 const authRoutes = require('./routes/auth.routes');
 app.use('/auth', authRoutes);
 
+const feedbackRoutes = require('./routes/feedback.routes');
+app.use('/api', feedbackRoutes);
+
 // Handle Errors - TO BE CREATED
 
 module.exports = app;
