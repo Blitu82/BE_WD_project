@@ -4,89 +4,16 @@ const mongoose = require('mongoose');
 const fileUploader = require('../config/cloudinary.config');
 const axios = require('axios');
 const { parseString } = require('xml2js');
-
 const fs = require('fs');
 const path = require('path');
 
-// const dataPath = path.join(__dirname, '..', 'data', 'geojson');
-
-// fs.readdir(dataPath, function (err, files) {
-//   if (err) {
-//     return console.log('Unable to scan directory: ' + err);
-//   }
-//   files.forEach(function (file) {
-//     if (path.extname(file) === '.geojson') {
-//       const filePath = path.join(dataPath, file);
-//       const fileName = path.parse(file).name;
-//       const fileContent = fs.readFileSync(filePath, 'utf8');
-//       // const location = JSON.parse(fileContent);
-//       console.log(fileName, fileContent);
-// router.post('/grid', async (req, res, next) => {
-//   // const { tile, location, imgUrl } = req.body;
-//   try {
-//     const newGrid = await Grid.create({
-//       tile: fileName,
-//       location: fileContent,
-//       imgUrl: 'test',
-//     });
-//     console.log('New grid', newGrid);
-//     res.status(201).json(newGrid);
-//   } catch (error) {
-//     console.log('An error occurred creating the grid', error);
-//     next(error);
-//   }
-// });
-// }
-// console.log(file);
-//   });
-// });
-
-// function processGeoJSONFiles() {
-//   const dataPath = path.join(__dirname, '..', 'data', 'geojson');
-
-//   fs.readdir(dataPath, function (err, files) {
-//     if (err) {
-//       return console.log('Unable to scan directory: ' + err);
-//     }
-//     files.forEach(function (file) {
-//       if (path.extname(file) === '.geojson') {
-//         const filePath = path.join(dataPath, file);
-//         const fileName = path.parse(file).name;
-//         const fileContent = fs.readFileSync(filePath, 'utf8');
-//         console.log(fileName, fileContent);
-//         router.post('/grid', async (req, res, next) => {
-//           console.log('entering post...');
-//           try {
-//             const newGrid = await Grid.create({
-//               tile: fileName,
-//               location: fileContent,
-//               imgUrl: 'test',
-//             });
-//             console.log('New grid', newGrid);
-//             res.status(201).json(newGrid);
-//           } catch (error) {
-//             console.log('An error occurred creating the grid', error);
-//             next(error);
-//           }
-//         });
-//       }
-//     });
-//   });
-// }
-
-// // Call the function to execute
-// processGeoJSONFiles();
-
-// Define your route handler separately
+// Create a new grids using the files in the data/geojson folder
 router.post('/grid', async (req, res, next) => {
   console.log('entering post...');
   try {
     // Handle file processing here
     const dataPath = path.join(__dirname, '..', 'data', 'geojson');
-    console.log(dataPath);
     const files = fs.readdirSync(dataPath);
-    console.log(files);
-
     files.forEach(function (file) {
       if (path.extname(file) === '.geojson') {
         const filePath = path.join(dataPath, file);
@@ -94,7 +21,6 @@ router.post('/grid', async (req, res, next) => {
         const fileContent = fs.readFileSync(filePath, 'utf8');
         const fileJson = JSON.parse(fileContent);
 
-        // Insert your Grid creation logic here
         Grid.create({
           tile: fileName,
           location: fileJson,
@@ -108,7 +34,6 @@ router.post('/grid', async (req, res, next) => {
           });
       }
     });
-
     res.status(201).json({ message: 'Grids created successfully' });
   } catch (error) {
     console.log('An error occurred processing the grids', error);
@@ -143,7 +68,7 @@ router.get('/download', async (req, res) => {
       <DomainSubset>
         <ows:BoundingBox crs="urn:ogc:def:crs:EPSG::4326">
           <ows:LowerCorner>${minLat} ${minLng}</ows:LowerCorner>
-          <ows:UpperCorner>${maxLat}  ${maxLng}</ows:UpperCorner>
+          <ows:UpperCorner>${maxLat} ${maxLng}</ows:UpperCorner>
         </ows:BoundingBox>
       </DomainSubset>
       <Output store="true" format="image/tiff">
