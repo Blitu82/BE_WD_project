@@ -1,23 +1,137 @@
 const router = require('express').Router();
 const Grid = require('../models/Grid.model');
 const mongoose = require('mongoose');
-const fs = require('fs');
-const path = require('path');
 const fileUploader = require('../config/cloudinary.config');
 const axios = require('axios');
 const { parseString } = require('xml2js');
 
-// Function to read all the geojson files in a directory
-// function readGeoJsonFile(directoryPath) {
-//   return fs
-//     .readdirSync(directoryPath)
-//     .filter(file => path.extname(file) === '.geojson');
+const fs = require('fs');
+const path = require('path');
+
+// const dataPath = path.join(__dirname, '..', 'data', 'geojson');
+
+// fs.readdir(dataPath, function (err, files) {
+//   if (err) {
+//     return console.log('Unable to scan directory: ' + err);
+//   }
+//   files.forEach(function (file) {
+//     if (path.extname(file) === '.geojson') {
+//       const filePath = path.join(dataPath, file);
+//       const fileName = path.parse(file).name;
+//       const fileContent = fs.readFileSync(filePath, 'utf8');
+//       // const location = JSON.parse(fileContent);
+//       console.log(fileName, fileContent);
+// router.post('/grid', async (req, res, next) => {
+//   // const { tile, location, imgUrl } = req.body;
+//   try {
+//     const newGrid = await Grid.create({
+//       tile: fileName,
+//       location: fileContent,
+//       imgUrl: 'test',
+//     });
+//     console.log('New grid', newGrid);
+//     res.status(201).json(newGrid);
+//   } catch (error) {
+//     console.log('An error occurred creating the grid', error);
+//     next(error);
+//   }
+// });
+// }
+// console.log(file);
+//   });
+// });
+
+// function processGeoJSONFiles() {
+//   const dataPath = path.join(__dirname, '..', 'data', 'geojson');
+
+//   fs.readdir(dataPath, function (err, files) {
+//     if (err) {
+//       return console.log('Unable to scan directory: ' + err);
+//     }
+//     files.forEach(function (file) {
+//       if (path.extname(file) === '.geojson') {
+//         const filePath = path.join(dataPath, file);
+//         const fileName = path.parse(file).name;
+//         const fileContent = fs.readFileSync(filePath, 'utf8');
+//         console.log(fileName, fileContent);
+//         router.post('/grid', async (req, res, next) => {
+//           console.log('entering post...');
+//           try {
+//             const newGrid = await Grid.create({
+//               tile: fileName,
+//               location: fileContent,
+//               imgUrl: 'test',
+//             });
+//             console.log('New grid', newGrid);
+//             res.status(201).json(newGrid);
+//           } catch (error) {
+//             console.log('An error occurred creating the grid', error);
+//             next(error);
+//           }
+//         });
+//       }
+//     });
+//   });
 // }
 
-// // Function to read geojson content from a file
-// function readGeoJsonFile(filePath) {
-//   return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-// }
+// // Call the function to execute
+// processGeoJSONFiles();
+
+// Define your route handler separately
+router.post('/grid', async (req, res, next) => {
+  console.log('entering post...');
+  try {
+    // Handle file processing here
+    const dataPath = path.join(__dirname, '..', 'data', 'geojson');
+    console.log(dataPath);
+    const files = fs.readdirSync(dataPath);
+    console.log(files);
+
+    files.forEach(function (file) {
+      if (path.extname(file) === '.geojson') {
+        const filePath = path.join(dataPath, file);
+        const fileName = path.parse(file).name;
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        const fileJson = JSON.parse(fileContent);
+
+        // Insert your Grid creation logic here
+        Grid.create({
+          tile: fileName,
+          location: fileJson,
+          imgUrl: 'test',
+        })
+          .then(newGrid => {
+            console.log('New grid', newGrid);
+          })
+          .catch(error => {
+            console.log('An error occurred creating the grid', error);
+          });
+      }
+    });
+
+    res.status(201).json({ message: 'Grids created successfully' });
+  } catch (error) {
+    console.log('An error occurred processing the grids', error);
+    next(error);
+  }
+});
+
+// Create a new grid
+// router.post('/grid', async (req, res, next) => {
+//   const { tile, location, imgUrl } = req.body;
+//   try {
+//     const newGrid = await Grid.create({
+//       tile,
+//       location,
+//       imgUrl,
+//     });
+//     console.log('New grid', newGrid);
+//     res.status(201).json(newGrid);
+//   } catch (error) {
+//     console.log('An error occurred creating the grid', error);
+//     next(error);
+//   }
+// });
 
 router.get('/download', async (req, res) => {
   const { minLat, minLng, maxLat, maxLng } = req.query;
@@ -70,22 +184,6 @@ router.get('/download', async (req, res) => {
   } catch (error) {
     console.log('An error occurred while getting the coverage:', error);
     res.status(500).json({ message: 'An error occurred' });
-  }
-});
-
-// Create a new grid
-router.post('/grid', async (req, res, next) => {
-  try {
-    const newGrid = await Grid.create({
-      name,
-      location,
-      imgUrl,
-    });
-    console.log('New grid', newGrid);
-    res.status(201).json(newGrid);
-  } catch (error) {
-    console.log('An error occurred creating the grid', error);
-    next(error);
   }
 });
 
@@ -181,14 +279,11 @@ router.post('/upload', fileUploader.single('imgUrl'), (req, res) => {
   }
 });
 
-// Download bathy data from Cloudinary and return the URL
-// router.get('/upload', fileUploader.single('imgUrl'), (req, res) => {
-//   try {
-//     res.status(200).json({ imgUrl: req.file.path });
-//   } catch (error) {
-//     console.log('An error occurred uploading the bathymetry', error);
-//     res.status(500).json({ message: 'An error occurred' });
-//   }
-// });
+// Function to read all the geojson files in a directory
+function readGeoJsonFile(directoryPath) {
+  return fs
+    .readdirSync(directoryPath)
+    .filter(file => path.extname(file) === '.geojson');
+}
 
 module.exports = router;

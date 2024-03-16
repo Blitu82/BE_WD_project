@@ -13,7 +13,7 @@ const polygonSchema = new Schema({
 });
 
 const gridSchema = new Schema({
-  name: String,
+  tile: String,
   location: polygonSchema,
   imgUrl: String,
 });
