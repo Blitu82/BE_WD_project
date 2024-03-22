@@ -15,23 +15,22 @@ router.post('/signup', async (req, res, next) => {
       return res.status(400).json({ message: 'Provide email and password.' });
     }
 
-    //***********************
     // Use regex to validate the email format.
-    // const emailRegex = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/;
+    const emailRegex = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/;
 
-    // if (!emailRegex.test(email)) {
-    //   return res.status(400).json({ message: 'Provide a valid email address' });
-    // }
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Provide a valid email address' });
+    }
 
     // Use regex to validate the password format.
-    // const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
-    // if (!passwordRegex.test(password)) {
-    //   return res.status(400).json({
-    //     message:
-    //       'Password must have at least 6 characters and contain one number, one lowercase, one uppercase and one special character.',
-    //   });
-    // }
-    //***********************
+    const passwordRegex =
+      /^(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$/gm;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        message:
+          'Password should be at least one capital letter, one small letter, one number and 8 character length.',
+      });
+    }
 
     // Check if a user with the same email already exists.
     const userExists = await User.findOne({ email });
