@@ -84,7 +84,7 @@ router.get('/download', async (req, res) => {
     // Make a POST request to GeoServer's WCS endpoint
     const response = await axios.post(
       // 'http://localhost:8080/geoserver/wcs?',
-      'http://ec2-16-16-121-223.eu-north-1.compute.amazonaws.com:8080/geoserver/wcs?',
+      'http://ec2-13-53-199-118.eu-north-1.compute.amazonaws.com:8080/geoserver/wcs?',
 
       getCoverageXML,
       {
