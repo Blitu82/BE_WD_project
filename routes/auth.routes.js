@@ -111,4 +111,35 @@ router.get('/verify', isAuthenticated, (req, res, next) => {
   res.status(200).json(req.payload);
 });
 
+// POST /auth/change-password - Allows a user to change their password
+router.post('/change-password', async (req, res, next) => {
+  const { email, oldPassword, newPassword } = req.body;
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    const isPasswordCorrect = bcrypt.compareSync(oldPassword, user.password);
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({ message: 'Incorrect old password.' });
+    }
+
+    // Hash the new password
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hashedNewPassword = bcrypt.hashSync(newPassword, salt);
+
+    // Update the user's password
+    user.password = hashedNewPassword;
+    await user.save();
+
+    // Send a success response
+    res.status(200).json({ message: 'Password updated successfully.' });
+  } catch (error) {
+    console.log('Error changing password', error);
+    next(error);
+  }
+});
+
 module.exports = router;
