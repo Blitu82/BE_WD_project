@@ -7,10 +7,28 @@ const { parseString } = require('xml2js');
 const fs = require('fs');
 const path = require('path');
 
+// Get all grids
+router.get('/grid', async (req, res, next) => {
+  try {
+    const allGrids = await Grid.find();
+    // console.log(allGrids);
+    res.json(allGrids);
+  } catch (error) {
+    console.log('An error occurred getting all the grids', error);
+    next(error);
+  }
+});
+
+// // Function to read all the geojson files in a directory
+// function readGeoJsonFile(directoryPath) {
+//   return fs
+//     .readdirSync(directoryPath)
+//     .filter(file => path.extname(file) === '.geojson');
+// }
+
 // Create a new grids using the files in the data/geojson folder
 router.post('/grid', async (req, res, next) => {
   try {
-    // Handle file processing here
     const dataPath = path.join(__dirname, '..', 'data', 'geojson');
     const files = fs.readdirSync(dataPath);
     files.forEach(function (file) {
@@ -39,23 +57,6 @@ router.post('/grid', async (req, res, next) => {
     next(error);
   }
 });
-
-// Create a new grid
-// router.post('/grid', async (req, res, next) => {
-//   const { tile, location, imgUrl } = req.body;
-//   try {
-//     const newGrid = await Grid.create({
-//       tile,
-//       location,
-//       imgUrl,
-//     });
-//     console.log('New grid', newGrid);
-//     res.status(201).json(newGrid);
-//   } catch (error) {
-//     console.log('An error occurred creating the grid', error);
-//     next(error);
-//   }
-// });
 
 router.get('/download', async (req, res) => {
   const { minLat, minLng, maxLat, maxLng } = req.query;
@@ -110,18 +111,6 @@ router.get('/download', async (req, res) => {
   } catch (error) {
     console.log('An error occurred while getting the coverage:', error);
     res.status(500).json({ message: 'An error occurred' });
-  }
-});
-
-// Get all grids
-router.get('/grid', async (req, res, next) => {
-  try {
-    const allGrids = await Grid.find();
-    // console.log(allGrids);
-    res.json(allGrids);
-  } catch (error) {
-    console.log('An error occurred getting all the grids', error);
-    next(error);
   }
 });
 
@@ -204,12 +193,5 @@ router.post('/upload', fileUploader.single('imgUrl'), (req, res) => {
     res.status(500).json({ message: 'An error occurred' });
   }
 });
-
-// Function to read all the geojson files in a directory
-function readGeoJsonFile(directoryPath) {
-  return fs
-    .readdirSync(directoryPath)
-    .filter(file => path.extname(file) === '.geojson');
-}
 
 module.exports = router;

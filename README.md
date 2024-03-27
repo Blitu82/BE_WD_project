@@ -2,25 +2,28 @@
 
 ## Routes
 
-### Bathy Routes
+### Grid Routes
 
-| Method | Route         | Description                             |
-| ------ | ------------- | --------------------------------------- |
-| GET    | /api/grid     | Returns all tiles                       |
-| GET    | /api/grid/:id | Returns the specified tile              |
-| POST   | /api/grid     | Creates a new tile                      |
-| PUT    | /api/grid/:id | Edits the specified tile                |
-| DELETE | /api/grid/:id | Deletes the specified tile              |
-| POST   | /api/upload   | Uploads an image to Cloudinary NOT USED |
-| GET    | /api/download | Downloads a coverage from GeoServer     |
+| Method | Route         | Description                                              |
+| ------ | ------------- | -------------------------------------------------------- |
+| GET    | /api/grid     | Returns all tiles                                        |
+| POST   | /api/grid     | Creates new tiles using the files in the /geojson folder |
+| GET    | /api/download | Endpoint for downloading coverage data from GeoServer    |
 
 ### Authentication Routes
 
-| Method | Route        | Description        |
-| ------ | ------------ | ------------------ |
-| POST   | /auth/signup | Creates a new user |
-| POST   | /auth/login  | Logs the user      |
-| GET    | /auth/verify | Verifies the JWT   |
+| Method | Route                 | Description                                  |
+| ------ | --------------------- | -------------------------------------------- |
+| POST   | /auth/signup          | Creates a new user                           |
+| POST   | /auth/login           | Verifies email and password and return a JWT |
+| GET    | /auth/verify          | Verifies JWT stored on the client            |
+| POST   | /auth/change-password | Allows a user to change their password       |
+
+### User Feedback Routes
+
+| Method | Route         | Description                           |
+| ------ | ------------- | ------------------------------------- |
+| POST   | /api/feedback | Allows a user to send a feedback form |
 
 ## Models
 
@@ -46,7 +49,6 @@
 {
   name: String,
   location: polygonSchema,
-  imgUrl: String
 }
 ```
 
@@ -54,8 +56,18 @@
 
 ```js
 {
-  name: String
   email: String,
   password: String,
+}
+```
+
+### Feedback Schema
+
+```js
+{
+  category: String,
+  rating: Number,
+  feedback: String,
+  email: String,
 }
 ```
