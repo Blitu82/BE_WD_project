@@ -9,7 +9,6 @@ const path = require('path');
 
 // Create a new grids using the files in the data/geojson folder
 router.post('/grid', async (req, res, next) => {
-  console.log('entering post...');
   try {
     // Handle file processing here
     const dataPath = path.join(__dirname, '..', 'data', 'geojson');
@@ -83,8 +82,8 @@ router.get('/download', async (req, res) => {
 
     // Make a POST request to GeoServer's WCS endpoint
     const response = await axios.post(
-      'http://localhost:8080/geoserver/wcs?', // local version
-      // 'http://ec2-13-53-199-118.eu-north-1.compute.amazonaws.com:8080/geoserver/wcs?', // AWS version
+      // 'http://localhost:8080/geoserver/wcs?', // local version
+      'http://ec2-13-53-199-118.eu-north-1.compute.amazonaws.com:8080/geoserver/wcs?', // AWS version
 
       getCoverageXML,
       {
